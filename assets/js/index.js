@@ -1,9 +1,9 @@
-var topics = ["But That's None of My Business", "Be Like Bill", "U Mad Bro", "Doge", "Good Guy Greg", "LOLcats", "Ermahgerd", "Epic Fail", "Dramatic Chipmunk", "Savage Patrick", "SpongeBob NoPants"];
+var topics = ["Crying Jordan", "Deal With It", "Salt Bae", "Doge", "Office Mokey", "LOLcats", "Ermahgerd", "Epic Fail", "Dank", "Viral Moments", "SpongeBob"];
 
 function addTopicButtons() {
     $(".btn-box").empty();
     for (var i = 0; i < topics.length; i++) {
-        var button = $("<button>").text(topics[i]).prop("class", "query-giphy");
+        var button = $("<a>").text(topics[i]).prop("class", "query-giphy button is-warning");
         $(".btn-box").append(button);
     }
 };
@@ -26,7 +26,7 @@ $("document").ready(function() {
     $(".btn-box").on("click", ".query-giphy", function() {
         var search = $(this).text();
         var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-            search + "&api_key=dc6zaTOxFJmzC&limit=9";
+            search + "&rating=pg13&api_key=dc6zaTOxFJmzC&limit=9";
 
         $("#gif-tile-container").empty();
 
@@ -35,6 +35,7 @@ $("document").ready(function() {
         method: "GET"
         })
         .then(function(response) {
+            console.log(response);
             var results = response.data;
             var gifAncestorDiv = $("<div class='tile is-ancestor' id='gif-ancestor-div-0'>");
     
@@ -53,7 +54,12 @@ $("document").ready(function() {
                 var p = $("<p>").text("Rating: " + rating);
 
                 var gif = $("<img>");
-                gif.attr("src", results[i].images.fixed_height.url);
+                gif.addClass("gif");
+                gif.attr("src", results[i].images.fixed_height_still.url);
+                gif.attr("data-still", results[i].images.fixed_height_still.url);
+                gif.attr("data-animate", results[i].images.fixed_height.url);
+                gif.attr("data-state", "still");
+
 
                 gifChildDiv.prepend(p);
                 gifChildDiv.prepend(gif);
@@ -65,5 +71,19 @@ $("document").ready(function() {
             }
         });
     });
+
+    $("#gif-tile-container").on("click", ".gif", function() {
+          var state = $(this).attr("data-state");
+        
+          if (state == "still") {
+            var animate = $(this).attr("data-animate");
+            $(this).attr("src", animate);
+            $(this).attr("data-state", "animate");
+          } else {
+            var still = $(this).attr("data-still");
+            $(this).attr("src", still);
+            $(this).attr("data-state", "still");
+          }
+      });
 
 });
