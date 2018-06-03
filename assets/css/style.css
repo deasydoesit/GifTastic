@@ -1,3 +1,8 @@
 body {
     padding: 25px;
 }
+
+#mySearch {
+    max-width: 70%;
+    width: 70%;
+}
