@@ -26,27 +26,42 @@ $("document").ready(function() {
     $(".btn-box").on("click", ".query-giphy", function() {
         var search = $(this).text();
         var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-            search + "&api_key=dc6zaTOxFJmzC&limit=10";
+            search + "&api_key=dc6zaTOxFJmzC&limit=9";
+
+        $("#gif-tile-container").empty();
+
         $.ajax({
         url: queryURL,
         method: "GET"
         })
         .then(function(response) {
             var results = response.data;
+            var gifAncestorDiv = $("<div class='tile is-ancestor' id='gif-ancestor-div-0'>");
+    
             for (var i = 0; i < results.length; i++) {
-                var gifDiv = $("<div class='item'>");
+                var gifChildDiv = $("<div class='tile is-child box'>");
+
+                var gifParentDiv = $("<div class='tile is-parent'>");
+                gifParentDiv.prop("id", "gifs-appear-here-" + i);
+
+                if (i % 3 === 0) {
+                    gifAncestorDiv = $("<div class='tile is-ancestor'>");
+                    gifAncestorDiv.prop("id", "gif-ancestor-div-" + i);
+                }
 
                 var rating = results[i].rating;
-
                 var p = $("<p>").text("Rating: " + rating);
 
-                var personImage = $("<img>");
-                personImage.attr("src", results[i].images.fixed_height.url);
+                var gif = $("<img>");
+                gif.attr("src", results[i].images.fixed_height.url);
 
-                gifDiv.prepend(p);
-                gifDiv.prepend(personImage);
+                gifChildDiv.prepend(p);
+                gifChildDiv.prepend(gif);
 
-                $("#gifs-appear-here").prepend(gifDiv);
+                gifParentDiv.append(gifChildDiv);
+                gifAncestorDiv.append(gifParentDiv);
+
+                $("#gif-tile-container").append(gifAncestorDiv);
             }
         });
     });
